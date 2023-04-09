@@ -8,12 +8,14 @@ def solution(x_success: int,
              x_cnt: int, 
              y_success: int, 
              y_cnt: int) -> bool:
-    import math
-    from scipy.stats import norm
+    import scipy.stats as stats
+    alpha = 0.08
     p1 = x_success / x_cnt
     p2 = y_success / y_cnt
-    p = (p1*x_cnt + p2*y_cnt) / (x_cnt + y_cnt)
-    z = (p1 - p2) / math.sqrt(p*(1-p)*(1/x_cnt + 1/y_cnt))
-    alpha = 0.08
-    z_alpha_2 = norm.ppf(1-alpha/2)
-    return abs(z) > z_alpha_2
+    se = ((p1 * (1 - p1)) / x_cnt + (p2 * (1 - p2)) / y_cnt) ** 0.5
+    z = (p1 - p2) / se
+    z_crit = abs(stats.norm.ppf(alpha / 2))
+    if abs(z) > z_crit:
+        return True
+    else:
+        return False
